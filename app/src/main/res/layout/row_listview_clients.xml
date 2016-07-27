@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_row_selector"
+    android:padding="8dp" >
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/civImageClientRow"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="8dp"/>
+
+    <TextView
+        android:id="@+id/tvNomeClientRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/civImageClientRow"
+        android:layout_toRightOf="@+id/civImageClientRow"
+        android:textSize="@dimen/clientName"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvTelephoneClientRow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvNomeClientRow"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/civImageClientRow"
+        android:textSize="@dimen/telephoneClient" />
+
+</RelativeLayout>

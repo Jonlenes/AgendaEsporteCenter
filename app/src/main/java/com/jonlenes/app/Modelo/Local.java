@@ -1,0 +1,43 @@
+package com.jonlenes.app.Modelo;
+
+/**
+ * Created by Jonlenes on 17/07/2016.
+ */
+public class Local {
+    private Long id;
+    private String description;
+
+    public Local(Long id, String description) {
+        this.id = id;
+        this.description = description;
+    }
+
+    public Local(String description) {
+        this.description = description;
+    }
+
+    public Local(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return description;
+    }
+}

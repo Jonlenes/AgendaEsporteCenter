@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">App</string>
+
+
+    <string name="prompt_name">Nome</string>
+    <string name="prompt_telephone">Telefone</string>
+    <string name="prompt_password">Nova senha</string>
+    <string name="prompt_password_new">Nova senha</string>
+    <string name="prompt_repeat_password">Repita nova senha</string>
+    <string name="salvar">Salvar</string>
+
+    <string name="action_my_data">Meus dados</string>
+    <string name="action_agenda">Agenda</string>
+    <string name="action_clients">Clientes</string>
+    <string name="action_sair">Sair</string>
+
+    <string name="title_activity_agenda">AgendaActivity</string>
+    <string name="selecionar_locais">Selecionar locais</string>
+    <string name="horarios_reservados">Reservados</string>
+    <string name="horarios_livres">Livres</string>
+    <string name="data">Data</string>
+    <string name="data_da_reserva">Data da reserva</string>
+    <string name="hora_da_reserva">Hora da reserva</string>
+    <string name="dura_o_em_min">Duração (em min)</string>
+    <string name="local_reserve">Local</string>
+    <string name="title_activity_clints">Clientes</string>
+    <string name="cliente">Cliente</string>
+    <string name="recorr_ncia_mensal">Recorrência mensal</string>
+    <string name="prompt_user">Usuário</string>
+    <string name="title_activity_view_reserve">ViewReserveActivity</string>
+
+</resources>

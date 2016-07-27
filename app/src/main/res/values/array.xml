@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="dialog_options_photo_itens">
+        <item>Tirar foto</item>
+        <item>Galeria</item>
+    </array>
+
+    <array name="dialog_options_clients">
+        <item>Editar</item>
+        <item>Deletar</item>
+    </array>
+
+
+</resources>
