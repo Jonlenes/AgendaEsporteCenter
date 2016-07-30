@@ -7,9 +7,9 @@ package com.jonlenes.app.Modelo;
 
 
 import com.jonlenes.app.DataBase.Connection;
-import com.mysql.jdbc.ResultSet;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ClientDao {
         ResultSet resultSet = null;
         List<Client> clients = new ArrayList<>();
 
-        resultSet = (ResultSet) Connection.getInstance().getExecute(sql);
+        resultSet = Connection.getInstance().getExecute(sql);
 
         while (resultSet.next()) {
             clients.add(new Client(resultSet.getLong("id"),
@@ -73,7 +73,7 @@ public class ClientDao {
                 "WHERE id = " + idClient;
 
         ResultSet resultSet = null;
-        resultSet = (ResultSet) Connection.getInstance().getExecute(sql);
+        resultSet = Connection.getInstance().getExecute(sql);
 
         if (resultSet.next()) {
             return new Client(resultSet.getLong("id"),
@@ -92,7 +92,7 @@ public class ClientDao {
         ResultSet resultSet = null;
         List<Client> clients = new ArrayList<>();
 
-        resultSet = (ResultSet) Connection.getInstance().getExecute(sql);
+        resultSet = Connection.getInstance().getExecute(sql);
 
         while (resultSet.next()) {
             clients.add(new Client(resultSet.getLong("id"),

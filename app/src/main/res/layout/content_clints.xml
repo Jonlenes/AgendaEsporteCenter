@@ -5,13 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ClientsActivity"
+    tools:context=".View.ClientsActivity"
     tools:showIn="@layout/activity_clints">
 
     <ListView
+        android:id="@+id/lvClients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lvClients"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Nenhum cliente cadastrado"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
 </RelativeLayout>

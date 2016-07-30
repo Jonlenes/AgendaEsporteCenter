@@ -7,12 +7,9 @@ package com.jonlenes.app.Modelo;
 
 
 import com.jonlenes.app.DataBase.Connection;
-import com.mysql.jdbc.ResultSet;
 
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Jonlenes on 16/07/2016.
@@ -24,7 +21,7 @@ public class ClientBo {
         String sql = "SELECT id FROM ScheduledTime \n" +
                 "WHERE idClient = " + id;
 
-        ResultSet resultSet = (ResultSet) Connection.getInstance().getExecute(sql);
+        ResultSet resultSet = Connection.getInstance().getExecute(sql);
         if (resultSet.next()) {
             throw new RuntimeException("Não foi possível excluir o cliente, pois o mesmo possui horário reservado.");
         }

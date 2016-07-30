@@ -16,8 +16,8 @@
 
     <string name="title_activity_agenda">AgendaActivity</string>
     <string name="selecionar_locais">Selecionar locais</string>
-    <string name="horarios_reservados">Reservados</string>
-    <string name="horarios_livres">Livres</string>
+    <string name="horarios_reservados">Reservada</string>
+    <string name="horarios_livres">Livre</string>
     <string name="data">Data</string>
     <string name="data_da_reserva">Data da reserva</string>
     <string name="hora_da_reserva">Hora da reserva</string>
@@ -28,5 +28,6 @@
     <string name="recorr_ncia_mensal">Recorrência mensal</string>
     <string name="prompt_user">Usuário</string>
     <string name="title_activity_view_reserve">ViewReserveActivity</string>
+    <string name="action_refresh">Atualizar</string>
 
 </resources>

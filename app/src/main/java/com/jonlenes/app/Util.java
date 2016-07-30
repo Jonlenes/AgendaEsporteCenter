@@ -1,7 +1,6 @@
 package com.jonlenes.app;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -30,6 +29,11 @@ public class Util {
     static public String formatTime(Time time) {
         return new SimpleDateFormat("HH:mm").format(time);
     }
+
+    static public String formatDate(Date date) {
+        return new SimpleDateFormat("dd/MM/yyyy").format(date);
+    }
+
 
 
 

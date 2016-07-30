@@ -1,7 +1,6 @@
 package com.jonlenes.app.View;
 
 import android.app.ProgressDialog;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -14,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.jonlenes.app.Modelo.UserBo;
-import com.jonlenes.app.MyReservasActivity;
 import com.jonlenes.app.R;
 import com.jonlenes.app.TreatException;
 
@@ -26,11 +24,24 @@ public class LoginActivity extends AppCompatActivity {
     private EditText edtNameUser;
     private EditText edtPasswordUser;
     private CheckBox chkConnectedUser;
+    private OnClickListener clickLogin = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new LoginAsyncTask().execute(edtNameUser.getText().toString(), edtPasswordUser.getText().toString());
+        }
+    };
+    private OnClickListener clickRegister = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivityForResult(new Intent(LoginActivity.this, CadastroUserActivity.class), REQUEST_NEW_USER_CADASTRADO);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().setTitle("Agenda Center Esportes");
 
         edtNameUser = (EditText) findViewById(R.id.edtNameUser);
         edtPasswordUser = (EditText) findViewById(R.id.edtPasswordUser);
@@ -57,21 +68,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-
-    private OnClickListener clickLogin = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            new LoginAsyncTask().execute(edtNameUser.getText().toString(), edtPasswordUser.getText().toString());
-        }
-    };
-
-    private OnClickListener clickRegister = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivityForResult(new Intent(LoginActivity.this, CadastroUserActivity.class), REQUEST_NEW_USER_CADASTRADO);
-        }
-    };
-
 
     public class LoginAsyncTask extends AsyncTask<String, Void, Void> {
 

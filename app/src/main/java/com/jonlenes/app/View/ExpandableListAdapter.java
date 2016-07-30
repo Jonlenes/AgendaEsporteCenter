@@ -1,4 +1,4 @@
-package com.jonlenes.app;
+package com.jonlenes.app.View;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.jonlenes.app.Modelo.Local;
 import com.jonlenes.app.Modelo.ScheduledTime;
+import com.jonlenes.app.R;
+import com.jonlenes.app.Util;
 
 import java.util.List;
 import java.util.Map;
@@ -53,8 +55,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.elv_times_item, null);
         }
 
-        ((TextView) convertView.findViewById(R.id.tvTimesStart)).setText(child.getStartTime().toString());
-        ((TextView) convertView.findViewById(R.id.tvTimesEnd)).setText(child.getEndTime().toString());
+        ((TextView) convertView.findViewById(R.id.tvDateReserve)).setText(Util.formatDate(child.getDateDay()));
+        ((TextView) convertView.findViewById(R.id.tvTimesStart)).setText(Util.formatTime(child.getStartTime()));
+        ((TextView) convertView.findViewById(R.id.tvTimesEnd)).setText(Util.formatTime(child.getEndTime()));
         ((TextView) convertView.findViewById(R.id.tvDuration)).setText(child.getDuration() + "min");
 
 

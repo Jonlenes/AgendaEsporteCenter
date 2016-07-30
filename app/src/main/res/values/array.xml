@@ -10,5 +10,9 @@
         <item>Deletar</item>
     </array>
 
+    <array name="dialog_options_reserve">
+        <item>Editar</item>
+        <item>Deletar</item>
+    </array>
 
 </resources>

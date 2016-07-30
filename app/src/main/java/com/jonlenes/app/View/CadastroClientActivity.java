@@ -1,39 +1,36 @@
 
-package com.jonlenes.app;
+package com.jonlenes.app.View;
 
 import android.app.AlertDialog;
-        import android.app.ProgressDialog;
-        import android.content.DialogInterface;
-        import android.content.Intent;
-import android.content.pm.ResolveInfo;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.ImageView;
-        import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-        import com.jonlenes.app.Modelo.Client;
-        import com.jonlenes.app.Modelo.ClientDao;
+import com.jonlenes.app.Modelo.Client;
+import com.jonlenes.app.Modelo.ClientDao;
+import com.jonlenes.app.R;
+import com.jonlenes.app.TreatException;
+import com.jonlenes.app.Util;
 
-        import java.io.ByteArrayInputStream;
-        import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-        import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import br.com.jansenfelipe.androidmask.MaskEditTextChangedListener;
 
@@ -58,8 +55,6 @@ public class CadastroClientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_client);
-
-        getSupportActionBar().setTitle("Cadastro de cliente");
 
         ivClientImage = (ImageView) findViewById(R.id.ivClientImage);
         edtClientName = (EditText) findViewById(R.id.edtNameClient);
@@ -97,8 +92,11 @@ public class CadastroClientActivity extends AppCompatActivity {
         });
 
         idClient = getIntent().getLongExtra("idClient", -1);
-        if (idClient != -1)
+        if (idClient != -1) {
+            getSupportActionBar().setTitle("Alteração do cliente");
             new SearchClientAsyncTask().execute();
+        } else
+            getSupportActionBar().setTitle("Cadastro de cliente");
 
     }
 
@@ -146,12 +144,13 @@ public class CadastroClientActivity extends AppCompatActivity {
     private void rotateAndCompressImage(boolean takeCameraPhoto) {
         //int newWidth = 400;
         //int newHeight = 400;
-        Matrix matrix = new Matrix(); ;
+        Matrix matrix = new Matrix();
         //float scaleWidth = ((float) newWidth) / bitmap.getWidth();;
         //float scaleHeight = ((float) newHeight) / bitmap.getHeight();
 
         matrix.postScale(0.3f, 0.3f);
-        matrix.postRotate(90);
+        if (takeCameraPhoto)
+            matrix.postRotate(90);
 
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 

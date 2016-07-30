@@ -1,10 +1,9 @@
-package com.jonlenes.app;
+package com.jonlenes.app.View;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +12,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,14 +25,66 @@ import android.widget.TextView;
 import com.jonlenes.app.Modelo.Client;
 import com.jonlenes.app.Modelo.ClientBo;
 import com.jonlenes.app.Modelo.ClientDao;
-import com.jonlenes.app.Modelo.Local;
+import com.jonlenes.app.R;
+import com.jonlenes.app.TreatException;
+import com.jonlenes.app.Util;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public class ClientsActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
+    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
+            new DialogFragment() {
+
+                private View view;
+
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    super.onCreate(savedInstanceState);
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    view = inflater.inflate(R.layout.dialog_view_client, null);
+
+                    ImageView imageView = (ImageView) view.findViewById(R.id.ivClientImage);
+
+                    byte[] bytes = ((Client) parent.getItemAtPosition(position)).getImage();
+                    imageView.setImageBitmap(Util.getBitmap(ClientsActivity.this, bytes));
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setView(view);
+
+                    return builder.create();
+                }
+
+            }.show(ClientsActivity.this.getSupportFragmentManager(), "dialog");
+        }
+    };
+    private AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(ClientsActivity.this);
+            builder.setTitle("Opções");
+            builder.setItems(R.array.dialog_options_clients, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int item) {
+                    switch (item) {
+                        case 0: //Editar
+                            updateClient((Client) parent.getItemAtPosition(position));
+                            break;
+
+                        case 1: //Deletar
+                            deleteClient((Client) parent.getItemAtPosition(position));
+                            break;
+                    }
+                }
+            });
+            builder.show();
+
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,58 +115,23 @@ public class ClientsActivity extends AppCompatActivity {
         new SearchClientsAsyncTask().execute();
     }
 
-    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
-            new DialogFragment() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.clients_activity_menu, menu);
+        return true;
+    }
 
-                private View view;
-
-                @Override
-                public Dialog onCreateDialog(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-                    LayoutInflater inflater = getActivity().getLayoutInflater();
-                    view = inflater.inflate(R.layout.dialog_view_client, null);
-
-                    ImageView imageView = (ImageView) view.findViewById(R.id.ivClientImage);
-
-                    byte[] bytes = ((Client) parent.getItemAtPosition(position)).getImage();
-                    imageView.setImageBitmap(Util.getBitmap(ClientsActivity.this, bytes));
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setView(view);
-
-                    return builder.create();
-                }
-
-            }.show(ClientsActivity.this.getSupportFragmentManager(), "dialog");
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh_clients: {
+                new SearchClientsAsyncTask().execute();
+            }
         }
-    };
 
-    private AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
-        @Override
-        public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(ClientsActivity.this);
-            builder.setTitle("Opções");
-            builder.setItems(R.array.dialog_options_clients, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int item) {
-                    switch (item) {
-                        case 0: //Editar
-                            updateClient((Client) parent.getItemAtPosition(position));
-                            break;
-
-                        case 1: //Deletar
-                            deleteClient((Client) parent.getItemAtPosition(position));
-                            break;
-                    }
-                }
-            });
-            builder.show();
-
-            return false;
-        }
-    };
+        return super.onOptionsItemSelected(item);
+    }
 
     private void deleteClient(final Client client) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ClientsActivity.this);
@@ -149,6 +167,7 @@ public class ClientsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            ClientsActivity.this.findViewById(R.id.tvEmpty).setVisibility(View.INVISIBLE);
             progressDialog.show();
         }
 
@@ -172,9 +191,12 @@ public class ClientsActivity extends AppCompatActivity {
 
             progressDialog.dismiss();
 
-            if (exception == null)
-                ( (ListView) ClientsActivity.this.findViewById(R.id.lvClients) ).setAdapter(new AdapterListClient(list));
-            else
+            if (exception == null) {
+                if (list.isEmpty())
+                    ClientsActivity.this.findViewById(R.id.tvEmpty).setVisibility(View.INVISIBLE);
+                else
+                    ((ListView) ClientsActivity.this.findViewById(R.id.lvClients)).setAdapter(new AdapterListClient(list));
+            } else
                 TreatException.treat(ClientsActivity.this, exception);
         }
     }

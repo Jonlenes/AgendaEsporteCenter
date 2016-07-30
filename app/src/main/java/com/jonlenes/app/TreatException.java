@@ -1,18 +1,14 @@
 package com.jonlenes.app;
 
+import android.content.Context;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by asus on 24/07/2016.
  */
 public class TreatException {
-    static public void treat(AppCompatActivity activity, Exception exception) {
-        new TreatException(activity, exception, true);
-    }
-
-    private TreatException(AppCompatActivity activity, Exception exception, boolean checkConnection) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    private TreatException(Context context, Exception exception) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         if (exception instanceof RuntimeException) {
             builder.setMessage(exception.getMessage());
@@ -24,5 +20,9 @@ public class TreatException {
         builder.setPositiveButton("Ok", null);
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    static public void treat(Context context, Exception exception) {
+        new TreatException(context, exception);
     }
 }

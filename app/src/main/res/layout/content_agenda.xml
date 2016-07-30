@@ -12,77 +12,34 @@
     tools:context="com.jonlenes.app.AgendaActivity"
     tools:showIn="@layout/activity_agenda">
 
-    <Button
+    <ExpandableListView
+        android:id="@+id/expandableListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnSelectLocal"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
+        android:layout_below="@+id/btnFiltrar" />
+
+    <Button
+        android:id="@+id/btnFiltrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:text="@string/selecionar_locais"
-        android:layout_marginBottom="@dimen/margin_geral"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Busca personalizada" />
 
     <TextView
+        android:id="@+id/tvEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/data"
-        android:id="@+id/textView"
-        android:layout_alignBottom="@+id/edtDateFilter"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="@dimen/margin_geral"/>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:ems="10"
-        android:id="@+id/edtDateFilter"
-        android:layout_below="@+id/btnSelectLocal"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="@dimen/margin_geral"
-        android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView"/>
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/rgTipo"
-        android:layout_marginBottom="@dimen/margin_geral"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/horarios_reservados"
-            android:id="@+id/rbReserved"
-            android:checked="true"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/horarios_livres"
-            android:id="@+id/rbLivre"
-            android:checked="false"
-            android:layout_marginLeft="@dimen/margin_geral"
-            android:layout_gravity="center_horizontal" />
-
-
-    </RadioGroup>
-
-    <ExpandableListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/expandableListView"
-        android:layout_below="@+id/rgTipo"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/btnFiltrar"
+        android:layout_centerHorizontal="true"
+        android:text="Nenhuma reserva para estes parâmetros"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
 
 
 </RelativeLayout>

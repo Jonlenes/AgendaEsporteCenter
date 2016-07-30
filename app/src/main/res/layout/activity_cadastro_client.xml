@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.jonlenes.app.CadastroClientActivity">
+    tools:context=".View.CadastroClientActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,8 +45,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_name"
-                            android:singleLine="true"
-                            android:maxLength="200" />
+                            android:maxLength="200"
+                            android:singleLine="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -60,10 +60,10 @@
                         android:id="@+id/edtClientTelephone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
                         android:hint="@string/prompt_telephone"
-                        android:singleLine="true"
-                        android:maxLength="20" />
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:singleLine="true" />
 
                 </android.support.design.widget.TextInputLayout>
 

@@ -4,20 +4,17 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.jonlenes.app.CadastroClientActivity;
 import com.jonlenes.app.Modelo.User;
 import com.jonlenes.app.Modelo.UserBo;
-import com.jonlenes.app.MyReservasActivity;
 import com.jonlenes.app.R;
 import com.jonlenes.app.TreatException;
 
@@ -35,8 +32,6 @@ public class CadastroUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_user);
-
-        getSupportActionBar().setTitle("Cadastro do usuário");
 
         edtNameUser = (EditText) findViewById(R.id.edtNameUser);
         edtPasswordUser = (EditText) findViewById(R.id.edtPasswordUser);
@@ -83,6 +78,12 @@ public class CadastroUserActivity extends AppCompatActivity {
             new SearchUserAsyncTask().execute();
         }
 
+        if (isNewUser) {
+            getSupportActionBar().setTitle("Cadastro do usuário");
+        } else {
+            getSupportActionBar().setTitle("Meus dados");
+        }
+
     }
 
     private boolean validFields() {
@@ -108,7 +109,7 @@ public class CadastroUserActivity extends AppCompatActivity {
             return false;
         }
 
-        if (edtPasswordUser.getText().toString().length() < 4) {
+        if (!edtPasswordUser.getText().toString().isEmpty() && edtPasswordUser.getText().toString().length() < 4) {
             Toast.makeText(CadastroUserActivity.this, "A senha deve ter no mínimo 4 caracteres.", Toast.LENGTH_LONG).show();
             return false;
         }

@@ -1,7 +1,5 @@
 package com.jonlenes.app.Modelo;
 
-import com.jonlenes.app.DataBase.Connection;
-import com.mysql.jdbc.ResultSet;
 
 import java.sql.SQLException;
 
@@ -10,6 +8,14 @@ import java.sql.SQLException;
  */
 public class UserBo {
     private static Long idUserActive = -1l;
+
+    public static Long getIdUserActive() {
+        return UserBo.idUserActive;
+    }
+
+    public static void setIdUserActive(Long idUserActive) {
+        UserBo.idUserActive = idUserActive;
+    }
 
     public void login(String name, String password) throws SQLException {
 
@@ -46,17 +52,5 @@ public class UserBo {
 
     public User getUserActive() throws SQLException {
         return new UserDao().getUser(idUserActive);
-    }
-
-
-
-
-
-    public static void setIdUserActive(Long idUserActive) {
-        UserBo.idUserActive = idUserActive;
-    }
-
-    public static Long getIdUserActive() {
-        return UserBo.idUserActive;
     }
 }

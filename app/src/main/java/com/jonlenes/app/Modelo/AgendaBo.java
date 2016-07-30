@@ -1,10 +1,10 @@
 package com.jonlenes.app.Modelo;
 
 import com.jonlenes.app.DataBase.Connection;
-import com.mysql.jdbc.ResultSet;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.DateFormat;
@@ -24,27 +24,43 @@ public class AgendaBo {
     private final Time beginTimeValid = Time.valueOf("08:00:00");
     private final Time endTimeValid = Time.valueOf("24:00:00");
 
-    public Map<Local, List<ScheduledTime> > getHorarios(Date date, List<Local> locals, Boolean isReserved) throws SQLException {
+    public Map<Local, List<ScheduledTime>> getHorarios(Date dateBegin, Date dateEnd, List<Local> locals, Boolean isReserved) throws SQLException {
 
         ScheduledTimeDao timeDao = new ScheduledTimeDao();
         Map<Local, List<ScheduledTime>> map = new LinkedHashMap<>();
 		Time timeInitial = new Time(beginTimeValid.getTime());
-		
-        
-		for (Local local : locals) {
-            List<ScheduledTime> listTimes = timeDao.getScheduledTimeByLocal(local.getId(), date);
+        Date datePrevius = null;
+
+
+        for (Local local : locals) {
+            List<ScheduledTime> listTimes = timeDao.getScheduledTimeByLocal(local.getId(), dateBegin, dateEnd);
 
             if (!isReserved) {
                 List<ScheduledTime> listTimesFree = new ArrayList<>();
 
                 if (listTimes.size() == 0) {
-                    listTimesFree.add(new ScheduledTime(beginTimeValid, endTimeValid, (endTimeValid.getTime() - beginTimeValid.getTime()) / (60000)));
+
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(dateBegin);
+                    while (c.getTime().getTime() <= dateEnd.getTime()) {
+                        listTimesFree.add(new ScheduledTime(new Date(c.getTime().getTime()), beginTimeValid, endTimeValid,
+                                (endTimeValid.getTime() - beginTimeValid.getTime()) / (60000)));
+                        c.add(Calendar.DAY_OF_YEAR, 1);
+                    }
+
                 } else {
 
+                    datePrevius = new Date(listTimes.get(0).getDateDay().getTime());
+
                     for (ScheduledTime time : listTimes) {
+                        if (datePrevius.getTime() != time.getDateDay().getTime()) {
+                            datePrevius = new Date(time.getDateDay().getTime());
+                            timeInitial = new Time(beginTimeValid.getTime());
+                        }
+
                         Long duration = (time.getStartTime().getTime() - timeInitial.getTime()) / 60000;
                         if (duration > 0) {
-                            listTimesFree.add(new ScheduledTime(timeInitial, time.getStartTime(), duration));
+                            listTimesFree.add(new ScheduledTime(time.getDateDay(), timeInitial, time.getStartTime(), duration));
                         }
                         timeInitial = new Time(time.getEndTime().getTime());
                     }
@@ -96,11 +112,13 @@ public class AgendaBo {
             }
         }
 
-        String sql = "SELECT idUser FROM ScheduledTime\n" +
+        String sql = "SELECT id FROM ScheduledTime\n" +
                 "WHERE dateDay = ?\n" +
                 "   AND idLocal = ?\n" +
                 "   AND ( ( ? >= startTime  AND  ? < endTime) OR\n" +
-                "       ( ? >= startTime  AND  ? < endTime) )";
+                "       ( ? >= startTime  AND  ? < endTime) )\n";
+        if (scheduledTime.getId() != -1)
+            sql += "   AND id != " + scheduledTime.getId();
 
         for (Date date : dates) {
             scheduledTime.setDateDay(new Date(date.getTime()));
@@ -117,10 +135,13 @@ public class AgendaBo {
                 throw new RuntimeException("Esse horário no dia " + new SimpleDateFormat("dd/MM/yyyy").format(date) + " não está disponível.");
         }
 
+        scheduledTime.setUser(new User(UserBo.getIdUserActive()));
         for (Date date : dates) {
             scheduledTime.setDateDay(new Date(date.getTime()));
-            scheduledTime.setUser(new User(UserBo.getIdUserActive()));
-            new ScheduledTimeDao().insert(scheduledTime);
+            if (date == dates.get(0) && scheduledTime.getId() != -1)
+                new ScheduledTimeDao().updade(scheduledTime);
+            else
+                new ScheduledTimeDao().insert(scheduledTime);
         }
     }
 
@@ -139,7 +160,7 @@ public class AgendaBo {
                 "   ON Client.id = ScheduledTime.idClient\n" +
                 "WHERE ScheduledTime.id = " + id;
 
-        ResultSet resultSet = (ResultSet) Connection.getInstance().getExecute(sql);
+        ResultSet resultSet = Connection.getInstance().getExecute(sql);
 
         if (resultSet.next()) {
             return new ScheduledTime(resultSet.getLong("id"),
