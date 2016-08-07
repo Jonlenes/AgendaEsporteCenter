@@ -36,8 +36,8 @@ import br.com.jansenfelipe.androidmask.MaskEditTextChangedListener;
 
 public class CadastroClientActivity extends AppCompatActivity {
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_IMAGE_GALLERY = 2;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_GALLERY = 2;
 
     private String absolutePathImage;
     private Bitmap bitmap;
@@ -45,7 +45,6 @@ public class CadastroClientActivity extends AppCompatActivity {
     private ImageView ivClientImage;
     private EditText edtClientName;
     private EditText edtClientTelephone;
-    private Button btnSaveClient;
 
     private String sMaskTelephone;
 
@@ -59,7 +58,7 @@ public class CadastroClientActivity extends AppCompatActivity {
         ivClientImage = (ImageView) findViewById(R.id.ivClientImage);
         edtClientName = (EditText) findViewById(R.id.edtNameClient);
         edtClientTelephone = (EditText) findViewById(R.id.edtClientTelephone);
-        btnSaveClient = (Button) findViewById(R.id.btnSaveClient);
+        Button btnSaveClient = (Button) findViewById(R.id.btnSaveClient);
 
         sMaskTelephone = "(##)#####-####";
         MaskEditTextChangedListener maskTelephone = new MaskEditTextChangedListener(sMaskTelephone, edtClientTelephone);
@@ -100,7 +99,7 @@ public class CadastroClientActivity extends AppCompatActivity {
 
     }
 
-    public boolean validFields() {
+    private boolean validFields() {
 
         if (edtClientName.getText().toString().isEmpty()) {
             edtClientName.setError("O nome não pode ser vazio.");
@@ -108,7 +107,7 @@ public class CadastroClientActivity extends AppCompatActivity {
         }
 
         if (edtClientTelephone.getText().toString().isEmpty() ||
-                edtClientTelephone.getText().toString().length() != sMaskTelephone.length()) {
+                edtClientTelephone.getText().toString().length() < 8) {
             edtClientTelephone.setError("Telefone inválido.");
             return false;
         }
@@ -181,7 +180,7 @@ public class CadastroClientActivity extends AppCompatActivity {
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photoFile = null;
+            File photoFile;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
@@ -202,13 +201,12 @@ public class CadastroClientActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+
+        return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
-        return image;
     }
 
     private void galleryTakePictureIntent()
@@ -219,7 +217,7 @@ public class CadastroClientActivity extends AppCompatActivity {
 
 
     private class InsertClientAsyncTask extends AsyncTask<Client, Void, Void> {
-        private ProgressDialog progressDialog;
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public InsertClientAsyncTask() {

@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class ClientBo {
 
     public void delete(Long id) throws SQLException {
-        String sql = "SELECT id FROM ScheduledTime \n" +
+        String sql = "SELECT id FROM Reserve \n" +
                 "WHERE idClient = " + id;
 
         ResultSet resultSet = Connection.getInstance().getExecute(sql);

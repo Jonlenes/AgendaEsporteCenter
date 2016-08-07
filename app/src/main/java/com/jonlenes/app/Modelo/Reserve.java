@@ -6,7 +6,7 @@ import java.sql.Time;
 /**
  * Created by Jonlenes on 17/07/2016.
  */
-public class ScheduledTime {
+public class Reserve {
     private Long id;
     private Date dateDay;
     private Time startTime;
@@ -16,24 +16,24 @@ public class ScheduledTime {
     private Local local;
     private Client client;
 
-    public ScheduledTime() {
+    public Reserve() {
 
     }
 
-    public ScheduledTime(Time startTime, Time endTime, Long duration) {
+    public Reserve(Time startTime, Time endTime, Long duration) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.duration = duration;
     }
 
-    public ScheduledTime(Date dateDay, Time startTime, Time endTime, Long duration) {
+    public Reserve(Date dateDay, Time startTime, Time endTime, Long duration) {
         this.dateDay = dateDay;
         this.startTime = startTime;
         this.endTime = endTime;
         this.duration = duration;
     }
 
-    public ScheduledTime(Long id, Date dateDay, Time startTime, Time endTime, Long duration, User user, Local local) {
+    public Reserve(Long id, Date dateDay, Time startTime, Time endTime, Long duration, User user, Local local) {
         this.id = id;
         this.dateDay = dateDay;
         this.startTime = startTime;
@@ -43,7 +43,7 @@ public class ScheduledTime {
         this.local = local;
     }
 
-    public ScheduledTime(Long id, Date dateDay, Time startTime, Time endTime, Long duration, User user, Local local, Client client) {
+    public Reserve(Long id, Date dateDay, Time startTime, Time endTime, Long duration, User user, Local local, Client client) {
         this.id = id;
         this.dateDay = dateDay;
         this.startTime = startTime;

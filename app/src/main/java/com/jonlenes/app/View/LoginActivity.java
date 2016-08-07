@@ -19,23 +19,9 @@ import com.jonlenes.app.TreatException;
 
 public class LoginActivity extends AppCompatActivity {
 
-    final private Integer REQUEST_NEW_USER_CADASTRADO = 1;
-
     private EditText edtNameUser;
     private EditText edtPasswordUser;
     private CheckBox chkConnectedUser;
-    private OnClickListener clickLogin = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            new LoginAsyncTask().execute(edtNameUser.getText().toString(), edtPasswordUser.getText().toString());
-        }
-    };
-    private OnClickListener clickRegister = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivityForResult(new Intent(LoginActivity.this, CadastroUserActivity.class), REQUEST_NEW_USER_CADASTRADO);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +55,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private final OnClickListener clickLogin = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new LoginAsyncTask().execute(edtNameUser.getText().toString(), edtPasswordUser.getText().toString());
+        }
+    };
+
+    private OnClickListener clickRegister = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(LoginActivity.this, CadastroUserActivity.class));
+        }
+    };
+
     public class LoginAsyncTask extends AsyncTask<String, Void, Void> {
 
-        private ProgressDialog progressDialog;
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public LoginAsyncTask() {

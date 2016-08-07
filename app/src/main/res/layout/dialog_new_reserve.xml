@@ -65,7 +65,8 @@
             android:id="@+id/edtDurationReserve"
             android:hint="@string/dura_o_em_min"
             android:layout_margin="@dimen/margin_geral"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:focusable="false"/>
 
     </android.support.design.widget.TextInputLayout>
 

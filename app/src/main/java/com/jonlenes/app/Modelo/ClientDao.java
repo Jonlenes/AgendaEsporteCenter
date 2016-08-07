@@ -49,7 +49,7 @@ public class ClientDao {
         String sql = "SELECT Id, name, telephone, image FROM Client \n" +
                 "ORDER BY name";
 
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         List<Client> clients = new ArrayList<>();
 
         resultSet = Connection.getInstance().getExecute(sql);
@@ -72,7 +72,7 @@ public class ClientDao {
         String sql = "SELECT id, name, telephone, image FROM Client \n" +
                 "WHERE id = " + idClient;
 
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         resultSet = Connection.getInstance().getExecute(sql);
 
         if (resultSet.next()) {
@@ -89,7 +89,7 @@ public class ClientDao {
         String sql = "SELECT Id, name, telephone FROM Client \n" +
                 "ORDER BY name";
 
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         List<Client> clients = new ArrayList<>();
 
         resultSet = Connection.getInstance().getExecute(sql);

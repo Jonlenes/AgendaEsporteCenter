@@ -4,7 +4,6 @@
 
     <string name="prompt_name">Nome</string>
     <string name="prompt_telephone">Telefone</string>
-    <string name="prompt_password">Nova senha</string>
     <string name="prompt_password_new">Nova senha</string>
     <string name="prompt_repeat_password">Repita nova senha</string>
     <string name="salvar">Salvar</string>
@@ -15,10 +14,8 @@
     <string name="action_sair">Sair</string>
 
     <string name="title_activity_agenda">AgendaActivity</string>
-    <string name="selecionar_locais">Selecionar locais</string>
     <string name="horarios_reservados">Reservada</string>
     <string name="horarios_livres">Livre</string>
-    <string name="data">Data</string>
     <string name="data_da_reserva">Data da reserva</string>
     <string name="hora_da_reserva">Hora da reserva</string>
     <string name="dura_o_em_min">Duração (em min)</string>

@@ -12,8 +12,8 @@ import android.widget.ExpandableListView;
 
 import com.jonlenes.app.AgendaActivity;
 import com.jonlenes.app.Modelo.Local;
-import com.jonlenes.app.Modelo.ScheduledTime;
-import com.jonlenes.app.Modelo.ScheduledTimeBo;
+import com.jonlenes.app.Modelo.Reserve;
+import com.jonlenes.app.Modelo.ReserveBo;
 import com.jonlenes.app.R;
 import com.jonlenes.app.TreatException;
 
@@ -24,16 +24,6 @@ import java.util.Map;
 public class MyReservasActivity extends AppCompatActivity {
 
     private ExpandableListView elvMyReserves;
-    private ExpandableListView.OnChildClickListener childClickListenerTimes = new ExpandableListView.OnChildClickListener() {
-        @Override
-        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-
-            Intent intent = new Intent(MyReservasActivity.this, ViewReserveActivity.class);
-            intent.putExtra("idReserve", ((ScheduledTime) elvMyReserves.getExpandableListAdapter().getChild(groupPosition, childPosition)).getId());
-            startActivity(intent);
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +85,19 @@ public class MyReservasActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class SearchTimesReservedAsyncTask extends AsyncTask<Void, Void, Map<Local, List<ScheduledTime>>> {
+    private final ExpandableListView.OnChildClickListener childClickListenerTimes = new ExpandableListView.OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+            Intent intent = new Intent(MyReservasActivity.this, ViewReserveActivity.class);
+            intent.putExtra("idReserve", ((Reserve) elvMyReserves.getExpandableListAdapter().getChild(groupPosition, childPosition)).getId());
+            startActivity(intent);
+            return false;
+        }
+    };
+
+
+    private class SearchTimesReservedAsyncTask extends AsyncTask<Void, Void, Map<Local, List<Reserve>>> {
         private ProgressDialog progressDialog;
         private Exception exception;
 
@@ -113,10 +115,10 @@ public class MyReservasActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Map<Local, List<ScheduledTime>> doInBackground(Void... params) {
+        protected Map<Local, List<Reserve>> doInBackground(Void... params) {
             try {
 
-                return new ScheduledTimeBo().getScheduledTimeByUser();
+                return new ReserveBo().getReserveByUser();
 
             } catch (Exception e) {
                 exception = e;
@@ -126,7 +128,7 @@ public class MyReservasActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Map<Local, List<ScheduledTime>> map) {
+        protected void onPostExecute(Map<Local, List<Reserve>> map) {
             super.onPostExecute(map);
 
             progressDialog.dismiss();

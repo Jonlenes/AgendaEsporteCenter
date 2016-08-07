@@ -19,7 +19,7 @@ public class Connection {
     private java.sql.Connection connection = null;
 
 
-    private Connection() throws SQLException {
+    private Connection() {
 
         this.url = "jdbc:mysql://stevie.heliohost.org/";
         this.dataBaseName = "jonlenes_locacao";
@@ -73,10 +73,10 @@ public class Connection {
         }
     }
 
-    public boolean execute(String sql) throws SQLException {
+    public void execute(String sql) throws SQLException {
         checkConnection();
         java.sql.Statement statement = connection.createStatement();
-        return statement.execute(sql);
+        statement.execute(sql);
     }
 
     public ResultSet getExecute(String sql) throws SQLException {

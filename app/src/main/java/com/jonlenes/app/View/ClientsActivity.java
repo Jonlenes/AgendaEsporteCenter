@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -33,14 +34,14 @@ import java.util.List;
 
 public class ClientsActivity extends AppCompatActivity {
 
-    private FloatingActionButton fab;
-    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(final AdapterView<?> parent, View view, final int position, long id) {
             new DialogFragment() {
 
                 private View view;
 
+                @NonNull
                 @Override
                 public Dialog onCreateDialog(Bundle savedInstanceState) {
                     super.onCreate(savedInstanceState);
@@ -93,7 +94,7 @@ public class ClientsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +156,7 @@ public class ClientsActivity extends AppCompatActivity {
 
 
     private class SearchClientsAsyncTask extends AsyncTask<Void, Void, List<Client> > {
-        private ProgressDialog progressDialog;
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public SearchClientsAsyncTask() {
@@ -246,7 +247,7 @@ public class ClientsActivity extends AppCompatActivity {
 
 
     class AdapterListClient extends BaseAdapter {
-        private List<Client> list;
+        private final List<Client> list;
 
         public AdapterListClient(List<Client> list) {
             super();

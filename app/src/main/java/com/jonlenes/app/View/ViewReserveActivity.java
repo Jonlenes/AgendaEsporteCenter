@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 import com.jonlenes.app.DialogNewReserve;
 import com.jonlenes.app.Modelo.AgendaBo;
-import com.jonlenes.app.Modelo.ScheduledTime;
-import com.jonlenes.app.Modelo.ScheduledTimeDao;
+import com.jonlenes.app.Modelo.Reserve;
+import com.jonlenes.app.Modelo.ReserveDao;
 import com.jonlenes.app.R;
 import com.jonlenes.app.TreatException;
 import com.jonlenes.app.Util;
@@ -25,8 +25,6 @@ import com.jonlenes.app.Util;
 public class ViewReserveActivity extends AppCompatActivity {
 
     private Long idReserve;
-
-    private Integer UPDATE_FINALISED = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +71,6 @@ public class ViewReserveActivity extends AppCompatActivity {
         new SearchReserveAsyncTask().execute();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     private void deleteReserve() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ViewReserveActivity.this);
         builder.setTitle("Confirmação");
@@ -117,8 +105,8 @@ public class ViewReserveActivity extends AppCompatActivity {
     }
 
 
-    private class SearchReserveAsyncTask extends AsyncTask<Void, Void, ScheduledTime> {
-        private ProgressDialog progressDialog;
+    private class SearchReserveAsyncTask extends AsyncTask<Void, Void, Reserve> {
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public SearchReserveAsyncTask() {
@@ -135,7 +123,7 @@ public class ViewReserveActivity extends AppCompatActivity {
 
 
         @Override
-        protected ScheduledTime doInBackground(Void... params) {
+        protected Reserve doInBackground(Void... params) {
             try {
 
                 return new AgendaBo().getReserva(idReserve);
@@ -148,8 +136,8 @@ public class ViewReserveActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ScheduledTime scheduledTime) {
-            super.onPostExecute(scheduledTime);
+        protected void onPostExecute(Reserve Reserve) {
+            super.onPostExecute(Reserve);
 
             progressDialog.dismiss();
             if (exception != null)
@@ -157,14 +145,14 @@ public class ViewReserveActivity extends AppCompatActivity {
             else {
 
                 ((ImageView) ViewReserveActivity.this.findViewById(R.id.ivClientReserve)).setImageBitmap(
-                        Util.getBitmap(ViewReserveActivity.this, scheduledTime.getClient().getImage()));
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvClientNameReserve)).setText(scheduledTime.getClient().getName());
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvClientTelephoneReserve)).setText(scheduledTime.getClient().getTelephone());
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvLocalReserve)).setText(scheduledTime.getLocal().getDescription());
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvDateReserve)).setText(Util.formatDate(scheduledTime.getDateDay()));
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvStartTimeReserve)).setText(Util.formatTime(scheduledTime.getStartTime()));
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvEndTimeReserve)).setText(Util.formatTime(scheduledTime.getEndTime()));
-                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvDurationReserve)).setText(scheduledTime.getDuration().toString() + "min");
+                        Util.getBitmap(ViewReserveActivity.this, Reserve.getClient().getImage()));
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvClientNameReserve)).setText(Reserve.getClient().getName());
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvClientTelephoneReserve)).setText(Reserve.getClient().getTelephone());
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvLocalReserve)).setText(Reserve.getLocal().getDescription());
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvDateReserve)).setText(Util.formatDate(Reserve.getDateDay()));
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvStartTimeReserve)).setText(Util.formatTime(Reserve.getStartTime()));
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvEndTimeReserve)).setText(Util.formatTime(Reserve.getEndTime()));
+                ((TextView) ViewReserveActivity.this.findViewById(R.id.tvDurationReserve)).setText(Reserve.getDuration().toString() + "min");
 
             }
 
@@ -192,7 +180,7 @@ public class ViewReserveActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             try {
 
-                new ScheduledTimeDao().delete(idReserve);
+                new ReserveDao().delete(idReserve);
 
             } catch (Exception e) {
                 exception = e;

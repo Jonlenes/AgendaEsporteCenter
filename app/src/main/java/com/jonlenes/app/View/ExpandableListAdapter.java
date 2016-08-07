@@ -9,7 +9,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.jonlenes.app.Modelo.Local;
-import com.jonlenes.app.Modelo.ScheduledTime;
+import com.jonlenes.app.Modelo.Reserve;
 import com.jonlenes.app.R;
 import com.jonlenes.app.Util;
 
@@ -21,12 +21,12 @@ import java.util.Map;
  */
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private Context _context;
+    private final Context _context;
     private List<Local> _listDataHeader;
-    private Map<Local, List<ScheduledTime>> _listDataChild;
+    private final Map<Local, List<Reserve>> _listDataChild;
 
     public ExpandableListAdapter(Context context, List<Local> listDataHeader,
-                                 Map<Local, List<ScheduledTime>> listChildData) {
+                                 Map<Local, List<Reserve>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -47,7 +47,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        ScheduledTime child = (ScheduledTime) getChild(groupPosition, childPosition);
+        Reserve child = (Reserve) getChild(groupPosition, childPosition);
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -113,7 +113,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    public Map<Local, List<ScheduledTime>> get_listDataChild() {
+    public Map<Local, List<Reserve>> get_listDataChild() {
         return _listDataChild;
     }
 }

@@ -4,7 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="margin_geral">16dp</dimen>
-    <dimen name="margin_list_bottom">20dp</dimen>
 
     <dimen name="clientName">17dp</dimen>
     <dimen name="telephoneClient">15dip</dimen>

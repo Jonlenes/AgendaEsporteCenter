@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Created by Jonlenes on 17/07/2016.
  */
-public class ScheduledTimeDao {
+public class ReserveDao {
 
-    public void insert(ScheduledTime time) throws SQLException {
-        String sql = "INSERT INTO ScheduledTime (dateDay, startTime, endTime, \n" +
+    public void insert(Reserve time) throws SQLException {
+        String sql = "INSERT INTO Reserve (dateDay, startTime, endTime, \n" +
                 "duration, idLocal, idUser, idClient) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = Connection.getInstance().preparedStatement(sql);
@@ -31,8 +31,8 @@ public class ScheduledTimeDao {
         preparedStatement.execute();
     }
 
-    public void updade(ScheduledTime time) throws SQLException {
-        String sql = "UPDATE ScheduledTime SET dateDay = ?, startTime = ?, endTime = ?, \n" +
+    public void updade(Reserve time) throws SQLException {
+        String sql = "UPDATE Reserve SET dateDay = ?, startTime = ?, endTime = ?, \n" +
                 "duration = ?, idLocal = ?, idUser = ?, idClient = ? \n" +
                 "WHERE id = ?";
 
@@ -51,23 +51,23 @@ public class ScheduledTimeDao {
     }
 
     public void delete(Long id) throws SQLException {
-        Connection.getInstance().execute("DELETE FROM ScheduledTime WHERE id = " + id);
+        Connection.getInstance().execute("DELETE FROM Reserve WHERE id = " + id);
     }
 
-    public List<ScheduledTime> getScheduledTimeByUser(Long idUser) throws SQLException {
+    public List<Reserve> getReserveByUser(Long idUser) throws SQLException {
 
-        String sql = "SELECT ScheduledTime.id, dateDay, startTime, endTime, duration, \n" +
-                "idUser, Local.description, Local.id AS idLocal FROM ScheduledTime\n" +
+        String sql = "SELECT Reserve.id, dateDay, startTime, endTime, duration, \n" +
+                "idUser, Local.description, Local.id AS idLocal FROM Reserve\n" +
                 "INNER JOIN Local\n" +
-                "   ON Local.id = ScheduledTime.idLocal\n" +
+                "   ON Local.id = Reserve.idLocal\n" +
                 "WHERE idUser = " + idUser + "\n" +
                 "ORDER BY Local.description, dateDay, startTime";
 
         ResultSet resultSet = Connection.getInstance().getExecute(sql);
-        List<ScheduledTime> scheduledTimes = new ArrayList<>();
+        List<Reserve> Reserves = new ArrayList<>();
 
         while (resultSet.next()) {
-            scheduledTimes.add(new ScheduledTime(resultSet.getLong("id"),
+            Reserves.add(new Reserve(resultSet.getLong("id"),
                     resultSet.getDate("dateDay"),
                     resultSet.getTime("startTime"),
                     resultSet.getTime("endTime"),
@@ -76,29 +76,26 @@ public class ScheduledTimeDao {
                     new Local(resultSet.getLong("idLocal"), resultSet.getString("description"))));
         }
 
-        return scheduledTimes;
+        return Reserves;
     }
 
-    public List<ScheduledTime> getScheduledTimeByLocal(Long idLocal, Date dateBegin, Date dateEnd) throws SQLException {
-        String sql = "SELECT ScheduledTime.id, dateDay, startTime, endTime, \n" +
+    public List<Reserve> getReserves(String locals, Date dateBegin, Date dateEnd) throws SQLException {
+        String sql = "SELECT Reserve.id, dateDay, startTime, endTime, \n" +
                 "duration, idLocal, idUser, User.name AS nameUser, \n" +
-                "Client.id AS idClient, Client.name As nameClient  FROM ScheduledTime\n" +
+                "Client.id AS idClient, Client.name As nameClient  FROM Reserve\n" +
                 "INNER JOIN User\n" +
-                "   ON User.id = ScheduledTime.idUser\n" +
+                "   ON User.id = Reserve.idUser\n" +
                 "INNER JOIN Client\n" +
-                "   ON Client.id = ScheduledTime.idClient\n" +
-                "WHERE idLocal = " + idLocal + "\n";
-
-        if (dateBegin != null && dateEnd != null)
-            sql += "   AND dateDay BETWEEN '" + dateBegin + "' AND '" + dateEnd + "'\n";
-
-        sql += "ORDER BY dateDay, startTime";
+                "   ON Client.id = Reserve.idClient\n" +
+                "WHERE idLocal IN " + locals + "\n" +
+                "   AND dateDay BETWEEN '" + dateBegin + "' AND '" + dateEnd + "'\n" +
+                "ORDER BY dateDay, startTime";
 
         ResultSet resultSet = Connection.getInstance().getExecute(sql);
-        List<ScheduledTime> scheduledTimes = new ArrayList<>();
+        List<Reserve> Reserves = new ArrayList<>();
 
         while (resultSet.next()) {
-            scheduledTimes.add(new ScheduledTime(resultSet.getLong("id"),
+            Reserves.add(new Reserve(resultSet.getLong("id"),
                     resultSet.getDate("dateDay"),
                     resultSet.getTime("startTime"),
                     resultSet.getTime("endTime"),
@@ -108,24 +105,24 @@ public class ScheduledTimeDao {
                     new Client(resultSet.getLong("idClient"), resultSet.getString("nameClient"))));
         }
 
-        return scheduledTimes;
+        return Reserves;
     }
 
-    public ScheduledTime getScheduledTime(Long id) throws SQLException {
-        String sql = "SELECT ScheduledTime.id, ScheduledTime.dateDay, ScheduledTime.startTime, ScheduledTime.endTime, \n" +
-                "ScheduledTime.duration, Local.id AS idLocal, Local.description AS descriptionLocal, idUser, \n" +
+    public Reserve getReserve(Long id) throws SQLException {
+        String sql = "SELECT Reserve.id, Reserve.dateDay, Reserve.startTime, Reserve.endTime, \n" +
+                "Reserve.duration, Local.id AS idLocal, Local.description AS descriptionLocal, idUser, \n" +
                 "Client.id AS idClient, Client.name AS nameClient \n" +
-                "FROM ScheduledTime\n" +
+                "FROM Reserve\n" +
                 "INNER JOIN Local\n" +
-                "   ON Local.id = ScheduledTime.idLocal\n" +
+                "   ON Local.id = Reserve.idLocal\n" +
                 "INNER JOIN Client\n" +
-                "   ON Client.id = ScheduledTime.idClient\n" +
-                "WHERE ScheduledTime.id = " + id;
+                "   ON Client.id = Reserve.idClient\n" +
+                "WHERE Reserve.id = " + id;
 
         ResultSet resultSet = Connection.getInstance().getExecute(sql);
 
         if (resultSet.next()) {
-            return new ScheduledTime(resultSet.getLong("id"),
+            return new Reserve(resultSet.getLong("id"),
                     resultSet.getDate("dateDay"),
                     resultSet.getTime("startTime"),
                     resultSet.getTime("endTime"),

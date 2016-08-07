@@ -25,7 +25,7 @@ public class CadastroUserActivity extends AppCompatActivity {
     private EditText edtPasswordRepeatUser;
 
     private boolean isNewUser = true;
-    private Long id = -1l;
+    private Long id = -1L;
     private String passwordActual;
 
     @Override
@@ -118,7 +118,7 @@ public class CadastroUserActivity extends AppCompatActivity {
     }
 
     private class SearchUserAsyncTask extends AsyncTask<Void, Void, User> {
-        private ProgressDialog progressDialog;
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public SearchUserAsyncTask() {

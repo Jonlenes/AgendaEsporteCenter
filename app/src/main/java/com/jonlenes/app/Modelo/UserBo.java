@@ -7,7 +7,7 @@ import java.sql.SQLException;
  * Created by asus on 23/07/2016.
  */
 public class UserBo {
-    private static Long idUserActive = -1l;
+    private static Long idUserActive = -1L;
 
     public static Long getIdUserActive() {
         return UserBo.idUserActive;

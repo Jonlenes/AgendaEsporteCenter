@@ -7,15 +7,21 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -25,11 +31,12 @@ import com.jonlenes.app.Modelo.Client;
 import com.jonlenes.app.Modelo.ClientDao;
 import com.jonlenes.app.Modelo.Local;
 import com.jonlenes.app.Modelo.LocalDao;
-import com.jonlenes.app.Modelo.ScheduledTime;
-import com.jonlenes.app.Modelo.ScheduledTimeDao;
+import com.jonlenes.app.Modelo.Reserve;
+import com.jonlenes.app.Modelo.ReserveDao;
 import com.jonlenes.app.View.ViewReserveActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -38,44 +45,107 @@ import java.util.List;
  */
 public class DialogNewReserve extends DialogFragment {
 
-    AsyncTask task;
     private FragmentActivity activity;
     private AlertDialog dialog;
     private View view;
+
     private EditText edtDateReserve;
     private EditText edtHoursReserva;
-    View.OnClickListener clickTimeReserve = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            class TimePickerFragment extends DialogFragment
-                    implements TimePickerDialog.OnTimeSetListener {
-
-                @Override
-                public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-                    final Calendar c = Calendar.getInstance();
-                    int hour = c.get(Calendar.HOUR_OF_DAY);
-                    int minute = c.get(Calendar.MINUTE);
-
-                    return new TimePickerDialog(getActivity(), this, hour, minute, true);
-                }
-
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(0, 0, 0, hourOfDay, minute);
-
-                    edtHoursReserva.setText(new SimpleDateFormat("HH:mm").format(calendar.getTime()));
-                }
-            }
-            new TimePickerFragment().show(activity.getSupportFragmentManager(), "dialog");
-        }
-    };
     private EditText edtDurationReserve;
     private Spinner spnLocalReserve;
     private Spinner spnClientReserve;
+    private CheckBox chkRecorrenciaMensal;
+
     private boolean isRecorrenciaMensal;
     private Long idReserve;
-    private View.OnClickListener clickDateReserve = new View.OnClickListener() {
+
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        activity = getActivity();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        view = inflater.inflate(R.layout.dialog_new_reserve, null);
+
+        edtDateReserve = (EditText) view.findViewById(R.id.edtDateReserve);
+        edtHoursReserva = (EditText) view.findViewById(R.id.edtHoursReserva);
+        edtDurationReserve = (EditText) view.findViewById(R.id.edtDurationReserve);
+        spnLocalReserve = (Spinner) view.findViewById(R.id.spnLocalReserve);
+        spnClientReserve = (Spinner) view.findViewById(R.id.spnClient);
+        chkRecorrenciaMensal = (CheckBox) view.findViewById(R.id.chkRecorrenciaMensal);
+
+        edtHoursReserva.setOnClickListener(clickTimeReserve);
+        edtDateReserve.setOnClickListener(clickDateReserve);
+        edtDurationReserve.setOnClickListener(clickDurationReserve);
+
+        builder.setView(view)
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancelar", null);
+
+        Bundle bundle = getArguments();
+        idReserve = (bundle != null ? bundle.getLong("idReserve", -1) : -1L);
+        if (idReserve != -1) {
+            builder.setTitle("Atualizando reserva");
+        } else
+            builder.setTitle("Nova reserva");
+
+        dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+
+                    if (invalidFields())
+                        return;
+
+                    Reserve Reserve = new Reserve();
+
+                    Reserve.setId(idReserve);
+                    Reserve.setDateDay(Util.parseDate(edtDateReserve.getText().toString()));
+                    Reserve.setStartTime(Util.parseTime(edtHoursReserva.getText().toString()));
+                    Reserve.setDuration(Long.parseLong((edtDurationReserve).getText().toString()));
+                    Reserve.setEndTime(Util.sumTime(Reserve.getStartTime(), Reserve.getDuration()));
+                    Reserve.setLocal((Local) spnLocalReserve.getSelectedItem());
+                    Reserve.setClient((Client) spnClientReserve.getSelectedItem());
+
+                    isRecorrenciaMensal = chkRecorrenciaMensal.isChecked();
+
+                    new InsertReserveAsyncTask().execute(Reserve);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        new SearchClientsAsyncTask().execute();
+        new SearchLocalsAsyncTask().execute();
+
+        if (idReserve != -1)
+            new SearchReserveAsyncTask().execute();
+
+        return dialog;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        if (idReserve != -1) {
+            ((ViewReserveActivity) getActivity()).refreshActivity();
+        } else {
+            ((AgendaActivity) getActivity()).refreshActivity();
+        }
+
+    }
+    private final View.OnClickListener clickDateReserve = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             class DatePickerFragment extends DialogFragment
@@ -103,102 +173,93 @@ public class DialogNewReserve extends DialogFragment {
         }
     };
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        activity = getActivity();
+    View.OnClickListener clickTimeReserve = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            class TimePickerFragment extends DialogFragment
+                    implements TimePickerDialog.OnTimeSetListener {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        view = inflater.inflate(R.layout.dialog_new_reserve, null);
+                @NonNull
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        edtDateReserve = (EditText) view.findViewById(R.id.edtDateReserve);
-        edtHoursReserva = (EditText) view.findViewById(R.id.edtHoursReserva);
-        edtDurationReserve = (EditText) view.findViewById(R.id.edtDurationReserve);
-        spnLocalReserve = (Spinner) view.findViewById(R.id.spnLocalReserve);
-        spnClientReserve = (Spinner) view.findViewById(R.id.spnClient);
+                    final Calendar c = Calendar.getInstance();
+                    int hour = c.get(Calendar.HOUR_OF_DAY);
+                    int minute = c.get(Calendar.MINUTE);
 
-        edtHoursReserva.setOnClickListener(clickTimeReserve);
-        edtDateReserve.setOnClickListener(clickDateReserve);
+                    return new TimePickerDialog(getActivity(), this, hour, minute / 5, true);
+                }
 
-        builder.setView(view)
-                .setTitle("Nova reserva")
-                .setPositiveButton("OK", null)
-                .setNegativeButton("Cancelar", null);
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    if (minute % 5 != 0)
+                        minute = ((minute / 5) + 1) * 5;
 
-        dialog = builder.create();
-        dialog.show();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(0, 0, 0, hourOfDay, minute);
 
-        dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-
-                    if (!validFields())
-                        return;
-
-                    ScheduledTime scheduledTime = new ScheduledTime();
-
-                    scheduledTime.setId(idReserve);
-                    scheduledTime.setDateDay(Util.parseDate(edtDateReserve.getText().toString()));
-                    scheduledTime.setStartTime(Util.parseTime(edtHoursReserva.getText().toString()));
-                    scheduledTime.setDuration(Long.parseLong((edtDurationReserve).getText().toString()));
-                    scheduledTime.setEndTime(Util.sumTime(scheduledTime.getStartTime(), scheduledTime.getDuration()));
-                    scheduledTime.setLocal((Local) spnLocalReserve.getSelectedItem());
-                    scheduledTime.setClient((Client) spnClientReserve.getSelectedItem());
-
-                    isRecorrenciaMensal = ((CheckBox) view.findViewById(R.id.chkRecorrenciaMensal)).isChecked();
-
-                    new InsertScheduledTimeAsyncTask().execute(scheduledTime);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    edtHoursReserva.setText(new SimpleDateFormat("HH:mm").format(calendar.getTime()));
                 }
             }
-        });
-
-
-        new SearchClientsAsyncTask().execute();
-        new SearchLocalsAsyncTask().execute();
-
-        Bundle bundle = getArguments();
-        idReserve = (bundle != null ? bundle.getLong("idReserve", -1) : -1l);
-        if (idReserve != -1)
-            new SearchReserveAsyncTask().execute();
-
-        return dialog;
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-
-        if (idReserve != -1) {
-            ((ViewReserveActivity) getActivity()).refreshActivity();
-        } else {
-
+            new TimePickerFragment().show(activity.getSupportFragmentManager(), "dialog");
         }
+    };
 
-    }
+    View.OnClickListener clickDurationReserve = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            class DialogNumberPicker extends DialogFragment {
+                NumberPicker numberPicker;
 
-    private boolean validFields() {
+                @NonNull
+                @Override
+                public Dialog onCreateDialog(Bundle savedInstanceState) {
+                    super.onCreateDialog(savedInstanceState);
+
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    view = inflater.inflate(R.layout.dialog_number_picker, null);
+
+                    numberPicker = (NumberPicker) view.findViewById(R.id.numberPicker);
+                    setValuesInterval(numberPicker);
+
+                    if (!edtDurationReserve.getText().toString().isEmpty())
+                        numberPicker.setValue((Integer.parseInt(edtDurationReserve.getText().toString()) / 5) - 1);
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setView(view);
+                    builder.setNegativeButton("Cancelar", null);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            edtDurationReserve.setText(String.valueOf((numberPicker.getValue() + 1) * 5));
+                        }
+                    });
+
+                    return builder.create();
+                }
+            }
+            new DialogNumberPicker().show(DialogNewReserve.this.getChildFragmentManager(), "dialog");
+        }
+    };
+
+    private boolean invalidFields() {
         if (edtDateReserve.getText().toString().isEmpty()) {
             edtDateReserve.setError("A data deve ser preenchida.");
-            return false;
+            return true;
         }
 
         if (edtHoursReserva.getText().toString().isEmpty()) {
             edtHoursReserva.setError("A hora deve ser preenchida.");
-            return false;
+            return true;
         }
 
         if (edtDurationReserve.getText().toString().isEmpty()) {
             edtDurationReserve.setError("O tempo de duração deve ser preenchido.");
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private int getIndexItemSpinner(Spinner spinner, Long id) {
@@ -213,6 +274,20 @@ public class DialogNewReserve extends DialogFragment {
             }
         }
         return 0;
+    }
+
+    private void setValuesInterval(NumberPicker numberPicker) {
+        int NUMBER_OF_VALUES = 960/5;
+        int PICKER_RANGE = 5;
+
+        String[] displayedValues  = new String[NUMBER_OF_VALUES];
+
+        for(int i = 0; i < NUMBER_OF_VALUES; i++)
+            displayedValues[i] = String.valueOf(PICKER_RANGE * (i + 1));
+
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue(displayedValues.length - 1);
+        numberPicker.setDisplayedValues(displayedValues);
     }
 
     private class SearchClientsAsyncTask extends AsyncTask<Void, Void, List<Client>> {
@@ -309,8 +384,8 @@ public class DialogNewReserve extends DialogFragment {
         }
     }
 
-    private class SearchReserveAsyncTask extends AsyncTask<Void, Void, ScheduledTime> {
-        private ProgressDialog progressDialog;
+    private class SearchReserveAsyncTask extends AsyncTask<Void, Void, Reserve> {
+        private final ProgressDialog progressDialog;
         private Exception exception;
 
         public SearchReserveAsyncTask() {
@@ -326,10 +401,10 @@ public class DialogNewReserve extends DialogFragment {
         }
 
         @Override
-        protected ScheduledTime doInBackground(Void... params) {
+        protected Reserve doInBackground(Void... params) {
             try {
 
-                return new ScheduledTimeDao().getScheduledTime(idReserve);
+                return new ReserveDao().getReserve(idReserve);
 
             } catch (Exception e) {
                 exception = e;
@@ -339,8 +414,8 @@ public class DialogNewReserve extends DialogFragment {
         }
 
         @Override
-        protected void onPostExecute(ScheduledTime scheduledTime) {
-            super.onPostExecute(scheduledTime);
+        protected void onPostExecute(Reserve Reserve) {
+            super.onPostExecute(Reserve);
 
             if (exception == null) {
 
@@ -359,11 +434,11 @@ public class DialogNewReserve extends DialogFragment {
                     dismiss();
                 } else {
 
-                    edtDateReserve.setText(Util.formatDate(scheduledTime.getDateDay()));
-                    edtHoursReserva.setText(Util.formatTime(scheduledTime.getStartTime()));
-                    edtDurationReserve.setText(String.valueOf(scheduledTime.getDuration()));
-                    spnClientReserve.setSelection(getIndexItemSpinner(spnClientReserve, scheduledTime.getClient().getId()));
-                    spnLocalReserve.setSelection(getIndexItemSpinner(spnLocalReserve, scheduledTime.getLocal().getId()));
+                    edtDateReserve.setText(Util.formatDate(Reserve.getDateDay()));
+                    edtHoursReserva.setText(Util.formatTime(Reserve.getStartTime()));
+                    edtDurationReserve.setText(String.valueOf(Reserve.getDuration()));
+                    spnClientReserve.setSelection(getIndexItemSpinner(spnClientReserve, Reserve.getClient().getId()));
+                    spnLocalReserve.setSelection(getIndexItemSpinner(spnLocalReserve, Reserve.getLocal().getId()));
 
                 }
 
@@ -377,11 +452,11 @@ public class DialogNewReserve extends DialogFragment {
         }
     }
 
-    private class InsertScheduledTimeAsyncTask extends AsyncTask<ScheduledTime, Void, Void> {
+    private class InsertReserveAsyncTask extends AsyncTask<Reserve, Void, Void> {
         private ProgressDialog progressDialog;
         private Exception exception;
 
-        public InsertScheduledTimeAsyncTask() {
+        public InsertReserveAsyncTask() {
             progressDialog = new ProgressDialog(activity);
             if (idReserve != -1)
                 progressDialog.setMessage("Atualizando...");
@@ -397,7 +472,7 @@ public class DialogNewReserve extends DialogFragment {
         }
 
         @Override
-        protected Void doInBackground(ScheduledTime... params) {
+        protected Void doInBackground(Reserve... params) {
             try {
 
                 new AgendaBo().marcarHorario(params[0], isRecorrenciaMensal);

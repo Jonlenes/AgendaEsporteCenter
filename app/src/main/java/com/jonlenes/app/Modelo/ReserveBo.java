@@ -9,12 +9,12 @@ import java.util.Map;
 /**
  * Created by Jonlenes on 19/07/2016.
  */
-public class ScheduledTimeBo {
+public class ReserveBo {
 
-    public Map<Local, List<ScheduledTime>> getScheduledTimeByUser() throws SQLException {
+    public Map<Local, List<Reserve>> getReserveByUser() throws SQLException {
 
-        List<ScheduledTime> list = new ScheduledTimeDao().getScheduledTimeByUser(UserBo.getIdUserActive());
-        Map<Local, List<ScheduledTime>> map = new LinkedHashMap<>();
+        List<Reserve> list = new ReserveDao().getReserveByUser(UserBo.getIdUserActive());
+        Map<Local, List<Reserve>> map = new LinkedHashMap<>();
 
         if (list.size() > 0) {
 
@@ -22,7 +22,7 @@ public class ScheduledTimeBo {
             int i = 0;
 
             while (true) {
-                List<ScheduledTime> listLocal = new ArrayList<>();
+                List<Reserve> listLocal = new ArrayList<>();
                 while (i < list.size() && list.get(i).getLocal().getId().equals(local.getId())) {
                     listLocal.add(list.get(i));
                     ++i;
